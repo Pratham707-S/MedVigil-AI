@@ -216,7 +216,27 @@ Success `200 OK`:
   "patient_id": "demo-patient",
   "title": "Medication reconciliation summary",
   "current_medications": [
-    { "name": "Metformin", "dose": "500 mg", "frequency": "twice daily", "source": "prescription" }
+    { "name": "Metformin", "dose": "500 mg", "frequency": "twice daily", "source": "prescription" },
+    { "name": "Vitamin D", "dose": "1000 IU", "frequency": "daily", "source": "patient-reported" }
+  ],
+  "prescriptions": [
+    {
+      "type": "prescription",
+      "prescription_id": "rx-newer-001",
+      "date": "2026-10-01",
+      "source_filename": "demo-newer.pdf",
+      "medicines": [
+        { "name": "Metformin", "dose": "500 mg", "frequency": "twice daily", "source": "prescription" }
+      ]
+    }
+  ],
+  "intake": [
+    {
+      "intake_id": "intake-001",
+      "medicines": [
+        { "name": "Vitamin D", "dose": "1000 IU", "frequency": "daily", "source": "patient-reported" }
+      ]
+    }
   ],
   "clarifications": [
     {
@@ -233,7 +253,7 @@ Success `200 OK`:
 Validation and errors:
 
 - `400 Bad Request` when `patient_id` is missing or blank.
-- `404 Not Found` when no timeline exists for the patient.
+- An empty history returns `200 OK` with empty prescriptions, intake, current medications, and clarifications.
 - `500 Internal Server Error` if reconciliation output cannot be assembled; do not return a partial summary that hides a failure.
 - Summary data must be derived from reconciliation output, including unresolved clarification flags.
 
@@ -254,7 +274,7 @@ Success `200 OK`:
 Validation and errors:
 
 - `400 Bad Request` when `patient_id` is missing or blank.
-- `404 Not Found` when no summary exists for the patient.
+- An empty history still returns a valid downloadable summary with empty sections.
 - `500 Internal Server Error` when export fails; never emit a misleading or empty download.
 
 Owner: Pratham for report export and integration; Rohit for the download affordance.

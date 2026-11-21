@@ -33,5 +33,24 @@ def render_summary(summary: MedicationSummary) -> str:
     else:
         lines.append("- None")
 
+    lines.extend(["", "Confirmed prescription history:"])
+    if summary.prescriptions:
+        for prescription in summary.prescriptions:
+            lines.append(
+                f"- {prescription.prescription_id} | date: {prescription.date.isoformat()} "
+                f"| source: {prescription.source_filename or 'not recorded'}"
+            )
+    else:
+        lines.append("- None recorded")
+
+    lines.extend(["", "Patient-reported intake:"])
+    if summary.intake:
+        for intake in summary.intake:
+            lines.append(f"- {intake.intake_id}")
+            for medicine in intake.medicines:
+                lines.append(f"  {medicine.name} | source: {medicine.source}")
+    else:
+        lines.append("- None recorded")
+
     lines.extend(["", f"Review note: {summary.review_note}"])
     return "\n".join(lines)
