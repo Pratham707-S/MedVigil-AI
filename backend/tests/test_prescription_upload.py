@@ -22,6 +22,11 @@ class FakeExtractionProvider:
         )
 
 
+class FailingExtractionProvider:
+    def extract(self, document: bytes, mime_type: str) -> ExtractionDraft:
+        raise RuntimeError("simulated Gemini failure")
+
+
 def upload(filename: str, content: bytes, content_type: str) -> UploadFile:
     return UploadFile(
         file=BytesIO(content),
@@ -40,6 +45,15 @@ class PrescriptionUploadTests(unittest.TestCase):
         self.assertEqual(draft.medicines[0].name, "Metformin")
         self.assertEqual(provider.received, (b"pdf-bytes", "application/pdf"))
 
+    def test_image_upload_returns_editable_draft_from_fake_provider(self):
+        provider = FakeExtractionProvider()
+        draft = asyncio.run(
+            upload_prescription(upload("demo.png", b"png-bytes", "image/png"), provider)
+        )
+
+        self.assertEqual(draft.medicines[0].name, "Metformin")
+        self.assertEqual(provider.received, (b"png-bytes", "image/png"))
+
     def test_unsupported_type_is_rejected(self):
         with self.assertRaises(HTTPException) as context:
             asyncio.run(upload_prescription(upload("demo.txt", b"text", "text/plain"), FakeExtractionProvider()))
@@ -56,6 +70,17 @@ class PrescriptionUploadTests(unittest.TestCase):
             )
 
         self.assertEqual(context.exception.status_code, 413)
+
+    def test_gemini_failure_is_returned_as_bad_gateway(self):
+        with self.assertRaises(HTTPException) as context:
+            asyncio.run(
+                upload_prescription(
+                    upload("demo.pdf", b"pdf-bytes", "application/pdf"),
+                    FailingExtractionProvider(),
+                )
+            )
+
+        self.assertEqual(context.exception.status_code, 502)
 
 
 if __name__ == "__main__":
