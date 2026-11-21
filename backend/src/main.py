@@ -1,3 +1,4 @@
+# Integration owner: Pratham. Keep feature logic in the owned module boundaries.
 from fastapi import FastAPI
 
 app = FastAPI(title="MedVigil AI ORBIX API", version="0.1.0")

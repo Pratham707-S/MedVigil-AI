@@ -1,3 +1,4 @@
+// Owner: Rohit. Feature implementation belongs under src/features.
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';

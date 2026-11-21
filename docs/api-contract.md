@@ -1,5 +1,7 @@
 # ORBIX API contract draft (v0)
 
+> Owner: Pratham. This file defines the integration seams; handlers remain placeholders.
+
 Base URL: `/api/v1`
 
 All dates are ISO-8601 dates. IDs are opaque strings. Demo data is fictional.
