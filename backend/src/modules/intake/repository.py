@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timezone
+from pathlib import Path
 from uuid import uuid4
 
 from .database import connect
@@ -7,10 +8,12 @@ from .schemas import IntakeRequest, IntakeResponse
 
 
 class IntakeRepository:
-    def __init__(self, database_path=None):
-        self.database_path = database_path
+    def __init__(self, database_path: str | Path | None = None) -> None:
+        """Create a repository using the default or supplied SQLite path."""
+        self.database_path: str | Path | None = database_path
 
     def save(self, payload: IntakeRequest) -> IntakeResponse:
+        """Save one intake record and return its generated response."""
         intake_id = f"intake-{uuid4().hex[:8]}"
         medicines_json = json.dumps([medicine.model_dump() for medicine in payload.medicines])
         created_at = datetime.now(timezone.utc).isoformat()
@@ -28,6 +31,7 @@ class IntakeRepository:
         return IntakeResponse(intake_id=intake_id, patient_id=payload.patient_id, medicines=payload.medicines)
 
     def get(self, intake_id: str) -> IntakeResponse | None:
+        """Read one intake record, or return None when it does not exist."""
         connection = connect(self.database_path)
         try:
             row = connection.execute(
