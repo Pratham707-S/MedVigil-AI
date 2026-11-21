@@ -1,0 +1,7 @@
+import { useState } from 'react';
+
+export function IntakePanel({ medicines, onAdd }) {
+  const [name, setName] = useState(''); const [dose, setDose] = useState(''); const [frequency, setFrequency] = useState('');
+  const submit = (event) => { event.preventDefault(); if (!name.trim()) return; onAdd({ name: name.trim(), dose, frequency, source: 'patient-reported' }); setName(''); setDose(''); setFrequency(''); };
+  return <section className="card-section"><div className="eyebrow">03 · TODAY</div><h2>What are you taking today?</h2><p className="muted">Add vitamins, supplements, or over-the-counter medicines you use.</p><div className="current-list">{medicines.map((medicine) => <div className="current-item" key={`${medicine.name}-${medicine.source}`}><span className="pill-dot"/><div><strong>{medicine.name}</strong><small>{medicine.dose || 'Dose not recorded'} · {medicine.frequency || 'Frequency not recorded'}</small></div><span className="source-tag">{medicine.source === 'patient-reported' ? 'You' : 'Rx'}</span></div>)}</div><form className="otc-form" onSubmit={submit}><div className="eyebrow">ADD OTC / SUPPLEMENT</div><input value={name} onChange={(event) => setName(event.target.value)} placeholder="e.g. Vitamin D"/><div className="field-row"><input value={dose} onChange={(event) => setDose(event.target.value)} placeholder="Dose"/><input value={frequency} onChange={(event) => setFrequency(event.target.value)} placeholder="Frequency"/></div><button className="secondary-button" type="submit">+ Add medicine</button></form></section>;
+}
