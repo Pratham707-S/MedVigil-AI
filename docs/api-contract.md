@@ -79,6 +79,7 @@ Request: JSON body.
 {
   "patient_id": "demo-patient",
   "prescribed_on": "2026-10-01",
+  "source_filename": "demo-prescription.pdf",
   "medicines": [
     { "name": "Metformin", "dose": "500 mg", "frequency": "twice daily", "source": "prescription" }
   ]
@@ -93,6 +94,7 @@ Success `200 OK`:
   "patient_id": "demo-patient",
   "status": "confirmed",
   "prescribed_on": "2026-10-01",
+  "source_filename": "demo-prescription.pdf",
   "medicines": [
     { "name": "Metformin", "dose": "500 mg", "frequency": "twice daily", "source": "prescription" }
   ]
@@ -101,10 +103,10 @@ Success `200 OK`:
 
 Validation and errors:
 
-- `404 Not Found` when the draft ID does not exist.
 - `409 Conflict` when the record is already confirmed or cannot be confirmed twice.
 - `422 Unprocessable Entity` for a missing date, empty medicine name, or malformed medicine list.
-- Confirmation must preserve the reviewed values and must not silently invent missing dose or frequency data.
+- The upload draft is not persisted; the explicit confirmation request creates the confirmed record using the path ID and corrected values.
+- Confirmation must preserve the reviewed values, source filename, and must not silently invent missing dose or frequency data.
 
 Owner: Maanani for prescription confirmation; Rohit for the review/confirm call.
 

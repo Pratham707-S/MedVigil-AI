@@ -1,7 +1,11 @@
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from uuid import uuid4
 
-from .extraction import ExtractionDraft, ExtractionProvider
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+
+from .extraction import ExtractionProvider
 from .gemini_provider import GeminiConfigurationError, GeminiExtractionProvider
+from .repository import DuplicatePrescriptionError, PrescriptionRepository
+from .schemas import ConfirmPrescriptionRequest, ConfirmedPrescription, PrescriptionDraft
 
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 ALLOWED_MIME_TYPES = frozenset({"application/pdf", "image/jpeg", "image/png", "image/webp"})
@@ -14,11 +18,17 @@ def get_extraction_provider() -> ExtractionProvider:
     return GeminiExtractionProvider()
 
 
-@router.post("/upload", response_model=ExtractionDraft)
+def get_prescription_repository() -> PrescriptionRepository:
+    """Build the SQLite repository for one request."""
+    return PrescriptionRepository()
+
+
+@router.post("/upload", response_model=PrescriptionDraft, status_code=status.HTTP_201_CREATED)
 async def upload_prescription(
     file: UploadFile = File(...),
     provider: ExtractionProvider = Depends(get_extraction_provider),
-) -> ExtractionDraft:
+    patient_id: str = Form("demo-patient"),
+) -> PrescriptionDraft:
     """Upload an image or PDF and return an editable AI extraction draft."""
     mime_type = file.content_type or ""
     if mime_type not in ALLOWED_MIME_TYPES:
@@ -37,7 +47,19 @@ async def upload_prescription(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Upload is empty")
 
     try:
-        return provider.extract(document, mime_type)
+        draft = provider.extract(document, mime_type)
+        resolved_patient_id = patient_id if isinstance(patient_id, str) else "demo-patient"
+        return PrescriptionDraft(
+            prescription_id=f"draft-{uuid4().hex[:8]}",
+            patient_id=resolved_patient_id,
+            source_filename=file.filename or "upload",
+            prescribed_on=draft.prescribed_on,
+            medicines=[
+                {"name": medicine.name, "dose": medicine.dose, "frequency": medicine.frequency}
+                for medicine in draft.medicines
+            ],
+            needs_review=draft.needs_review,
+        )
     except GeminiConfigurationError as error:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -47,4 +69,20 @@ async def upload_prescription(
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Prescription extraction failed",
+        ) from error
+
+
+@router.post("/{prescription_id}/confirm", response_model=ConfirmedPrescription)
+def confirm_prescription(
+    prescription_id: str,
+    payload: ConfirmPrescriptionRequest,
+    repository: PrescriptionRepository = Depends(get_prescription_repository),
+) -> ConfirmedPrescription:
+    """Persist the user-corrected draft as a confirmed prescription."""
+    try:
+        return repository.save_confirmed(prescription_id, payload)
+    except DuplicatePrescriptionError as error:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Prescription has already been confirmed",
         ) from error
