@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Copy, Check, FileText, AlertCircle, Stethoscope, ShieldCheck, Clock } from 'lucide-react';
+import { Download, Copy, Check, FileText, AlertCircle, Stethoscope, Clock } from 'lucide-react';
 import { getSummary, downloadSummary } from '../../services/api';
 import { StatusBadge } from '../../components/StatusBadge';
 
@@ -42,7 +42,7 @@ export function ReportsScreen() {
       `Date       : ${new Date().toISOString().split('T')[0]}`,
       `\n1. CLARIFICATIONS:`,
       ...(summary.clarifications || []).map(
-        (c) => `• [${c.reviewer_status}] ${c.medicine}: ${c.question}`
+        (c) => `• [${c.reviewer_status}] ${c.medicine}: ${c.question} ${c.patient_instruction ? `-> (${c.patient_instruction})` : ''}`
       ),
       `\n2. CURRENT MEDICATIONS:`,
       ...(summary.current_medications || []).map(
@@ -63,7 +63,7 @@ export function ReportsScreen() {
 
   if (loading) {
     return (
-      <div className="py-16 text-center text-slate-400 space-y-3">
+      <div className="py-16 text-center text-slate-500 space-y-3">
         <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
         <p className="text-xs">Preparing doctor summary sheet...</p>
       </div>
@@ -78,7 +78,7 @@ export function ReportsScreen() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">Doctor Summary</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-600 mt-0.5 font-medium">
             Clinical handoff sheet ready for physician review.
           </p>
         </div>
@@ -86,9 +86,9 @@ export function ReportsScreen() {
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs py-2 px-3 rounded-xl transition min-h-[40px]"
+          className="inline-flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold text-xs py-2 px-3 rounded-xl transition min-h-[44px]"
         >
-          {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-500" />}
+          {copied ? <Check className="w-4 h-4 text-emerald-600 stroke-[2.5]" /> : <Copy className="w-4 h-4 text-slate-600" />}
           <span>{copied ? 'Copied' : 'Copy'}</span>
         </button>
       </div>
@@ -109,8 +109,8 @@ export function ReportsScreen() {
               <h3 className="text-sm font-extrabold text-slate-900 leading-tight">{summary.title}</h3>
             </div>
           </div>
-          <div className="text-right text-[11px] text-slate-400">
-            <div>Patient: <strong className="text-slate-800">{summary.patient_id}</strong></div>
+          <div className="text-right text-[11px] text-slate-500">
+            <div>Patient: <strong className="text-slate-900">{summary.patient_id}</strong></div>
             <div>{new Date().toISOString().split('T')[0]}</div>
           </div>
         </div>
@@ -123,16 +123,21 @@ export function ReportsScreen() {
           </h4>
 
           {(!summary.clarifications || summary.clarifications.length === 0) ? (
-            <p className="text-xs text-slate-400 italic">No unresolved clarifications found.</p>
+            <p className="text-xs text-slate-500 italic">No unresolved clarifications found.</p>
           ) : (
             <div className="space-y-2">
               {summary.clarifications.map((c, idx) => (
-                <div key={idx} className="bg-amber-50/70 border border-amber-200 rounded-xl p-3 text-xs space-y-1">
+                <div key={idx} className="bg-amber-50/80 border border-amber-300 rounded-xl p-3 text-xs space-y-1.5">
                   <div className="flex items-center justify-between">
                     <strong className="text-amber-950 font-bold">{c.medicine}</strong>
                     <StatusBadge type="needs_clarification" />
                   </div>
-                  <p className="text-amber-900/90 font-medium">"{c.question}"</p>
+                  <p className="text-amber-950 font-semibold">"{c.question}"</p>
+                  {c.patient_instruction && (
+                    <div className="bg-white/90 border border-amber-200 rounded-lg p-2 text-[11px] font-bold text-emerald-800">
+                      Patient Response: {c.patient_instruction}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -141,19 +146,19 @@ export function ReportsScreen() {
 
         {/* SECTION 2: Current Medications (Prescribed + OTC) */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800">
             2. Current Medications ({summary.current_medications?.length || 0})
           </h4>
 
           {(!summary.current_medications || summary.current_medications.length === 0) ? (
-            <p className="text-xs text-slate-400 italic">No current medications registered.</p>
+            <p className="text-xs text-slate-500 italic">No current medications registered.</p>
           ) : (
-            <div className="divide-y divide-slate-100 border border-slate-100 rounded-xl overflow-hidden bg-slate-50/50">
+            <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
               {summary.current_medications.map((m, idx) => (
                 <div key={idx} className="p-2.5 flex items-center justify-between text-xs">
                   <div>
-                    <strong className="text-slate-900 font-bold block">{m.name}</strong>
-                    <span className="text-[11px] text-slate-500">
+                    <strong className="text-slate-900 font-extrabold block">{m.name}</strong>
+                    <span className="text-[11px] text-slate-600 font-medium">
                       {m.dose || 'Dose unsp.'} · {m.frequency || 'Freq unsp.'}
                     </span>
                   </div>
@@ -166,25 +171,25 @@ export function ReportsScreen() {
 
         {/* SECTION 3: Recent Prescriptions */}
         <div className="space-y-2">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-slate-400" />
+          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-slate-500" />
             3. Recent Prescriptions ({summary.recent_prescriptions?.length || 0})
           </h4>
 
           {(!summary.recent_prescriptions || summary.recent_prescriptions.length === 0) ? (
-            <p className="text-xs text-slate-400 italic">No past prescriptions logged.</p>
+            <p className="text-xs text-slate-500 italic">No past prescriptions logged.</p>
           ) : (
             <div className="space-y-1.5">
               {summary.recent_prescriptions.map((rx, idx) => (
-                <div key={idx} className="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 text-xs flex items-center justify-between">
+                <div key={idx} className="bg-slate-50 border border-slate-200/90 rounded-xl p-2.5 text-xs flex items-center justify-between">
                   <div>
-                    <strong className="text-slate-800">{rx.prescribed_on}</strong>
-                    <span className="text-slate-400 text-[11px] ml-1.5">({rx.prescription_id})</span>
-                    <p className="text-[11px] text-slate-600 mt-0.5">
+                    <strong className="text-slate-900">{rx.prescribed_on}</strong>
+                    <span className="text-slate-500 text-[11px] ml-1.5">({rx.prescription_id})</span>
+                    <p className="text-[11px] text-slate-700 font-medium mt-0.5">
                       {rx.medicines.map((m) => m.name).join(', ')}
                     </p>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                  <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded">
                     Confirmed
                   </span>
                 </div>
@@ -194,11 +199,11 @@ export function ReportsScreen() {
         </div>
 
         {/* SECTION 4: Review Note Disclaimer Box */}
-        <div className="bg-slate-50 border-l-3 border-slate-400 rounded-r-xl p-3 text-xs text-slate-600">
-          <span className="font-bold text-slate-800 block text-[11px] uppercase tracking-wider mb-0.5">
+        <div className="bg-slate-50 border-l-3 border-slate-500 rounded-r-xl p-3 text-xs text-slate-700">
+          <span className="font-bold text-slate-900 block text-[11px] uppercase tracking-wider mb-0.5">
             4. Clinical Review Note
           </span>
-          <p className="italic">"{summary.review_note}"</p>
+          <p className="italic font-medium">"{summary.review_note}"</p>
         </div>
 
       </div>
@@ -209,7 +214,7 @@ export function ReportsScreen() {
           type="button"
           onClick={handleDownload}
           disabled={downloading}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-98 disabled:opacity-50 text-white font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg min-h-[48px] transition touch-manipulation"
+          className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-98 disabled:opacity-50 text-white font-black py-4 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-lg min-h-[52px] text-sm transition touch-manipulation"
         >
           <Download className="w-5 h-5 stroke-[2.5]" />
           <span>{downloading ? 'Generating Report...' : 'Download Summary (.txt)'}</span>
