@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from starlette.concurrency import run_in_threadpool
 
 from .extraction import ExtractionProvider
 from .gemini_provider import GeminiConfigurationError, GeminiExtractionProvider
@@ -46,24 +47,39 @@ async def upload_prescription(
     if not document:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Upload is empty")
 
+    resolved_patient_id = patient_id if isinstance(patient_id, str) else "demo-patient"
+    if not resolved_patient_id.strip():
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Patient ID is required",
+        )
+
     try:
-        draft = provider.extract(document, mime_type)
-        resolved_patient_id = patient_id if isinstance(patient_id, str) else "demo-patient"
+        draft = await run_in_threadpool(provider.extract, document, mime_type)
+        medicines = [
+            {"name": medicine.name.strip(), "dose": medicine.dose, "frequency": medicine.frequency}
+            for medicine in draft.medicines
+            if medicine.name.strip()
+        ]
+        if not medicines:
+            raise ValueError("No readable medicine names found")
         return PrescriptionDraft(
             prescription_id=f"draft-{uuid4().hex[:8]}",
-            patient_id=resolved_patient_id,
+            patient_id=resolved_patient_id.strip(),
             source_filename=file.filename or "upload",
             prescribed_on=draft.prescribed_on,
-            medicines=[
-                {"name": medicine.name, "dose": medicine.dose, "frequency": medicine.frequency}
-                for medicine in draft.medicines
-            ],
+            medicines=medicines,
             needs_review=draft.needs_review,
         )
     except GeminiConfigurationError as error:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Gemini extraction is not configured",
+        ) from error
+    except ValueError as error:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Unable to extract valid prescription data",
         ) from error
     except Exception as error:
         raise HTTPException(
