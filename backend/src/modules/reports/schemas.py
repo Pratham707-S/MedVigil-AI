@@ -2,6 +2,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from src.modules.reconciliation.timeline import TimelineIntake, TimelinePrescription
+
 
 class ReportMedicine(BaseModel):
     """A medicine item shown in the doctor-ready summary."""
@@ -34,6 +36,14 @@ class MedicationSummary(BaseModel):
     title: str = Field(min_length=1, description="Human-readable summary title.")
     current_medications: list[ReportMedicine] = Field(
         description="Current medication items included in the summary.",
+    )
+    prescriptions: list[TimelinePrescription] = Field(
+        default_factory=list,
+        description="Patient-scoped confirmed prescription history with source references.",
+    )
+    intake: list[TimelineIntake] = Field(
+        default_factory=list,
+        description="Patient-scoped patient-reported medicines, including OTC entries.",
     )
     clarifications: list[ReportClarification] = Field(
         description="Unresolved questions that require reviewer clarification.",

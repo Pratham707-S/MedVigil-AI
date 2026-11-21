@@ -1,0 +1,8 @@
+export function DraftReview({ draft, onChange, onConfirm, onBack, busy }) {
+  const updateMedicine = (index, key, value) => {
+    const medicines = draft.medicines.map((medicine, medicineIndex) => medicineIndex === index ? { ...medicine, [key]: value } : medicine);
+    onChange({ ...draft, medicines });
+  };
+
+  return <section className="card-section"><button className="back-button" onClick={onBack}>← Back to upload</button><div className="eyebrow">02 · REVIEW DRAFT</div><h2>Check the details before confirming.</h2><p className="muted">{draft.source_filename} · {draft.prescribed_on || 'Date needs review'}</p><div className="review-banner"><span>✦</span><div><strong>Editable AI draft</strong><small>Correct anything that looks wrong or incomplete.</small></div></div><div className="medicine-stack">{draft.medicines.map((medicine, index) => <div className="medicine-editor" key={`${medicine.name}-${index}`}><div className="medicine-number">0{index + 1}</div><div className="editor-fields"><label>Medicine<input value={medicine.name} onChange={(event) => updateMedicine(index, 'name', event.target.value)} /></label><div className="field-row"><label>Dose<input value={medicine.dose} onChange={(event) => updateMedicine(index, 'dose', event.target.value)} /></label><label>Frequency<input value={medicine.frequency} onChange={(event) => updateMedicine(index, 'frequency', event.target.value)} /></label></div></div></div>)}</div><button className="primary-button full-button" onClick={onConfirm} disabled={busy}>{busy ? 'Saving…' : 'Confirm prescription'}</button><p className="micro-copy">Confirmation saves the reviewed record. It does not give medical advice.</p></section>;
+}

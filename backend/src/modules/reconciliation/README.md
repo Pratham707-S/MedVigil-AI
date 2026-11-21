@@ -40,6 +40,40 @@ An explicit `"stop_instructions": ["lisinopril"]` produces no flag. A newer pres
 
 The output is clarification only for a reviewer. It must never advise the patient to stop or continue a medicine.
 
+## Timeline endpoint
+
+`GET /api/v1/timeline?patient_id=demo-patient` returns only the requested patient's confirmed prescriptions, patient-reported intake, source filenames, and clarification flags. Prescription history is ordered by date and then ID; an empty patient history returns empty lists with `200 OK`.
+
+Example response:
+
+```json
+{
+  "patient_id": "demo-patient",
+  "prescriptions": [
+    {
+      "type": "prescription",
+      "prescription_id": "rx-new",
+      "date": "2026-11-01",
+      "source_filename": "newer.pdf",
+      "medicines": [
+        {"name":"Metformin","dose":"500 mg","frequency":"daily","source":"prescription"}
+      ]
+    }
+  ],
+  "intake": [
+    {
+      "intake_id": "intake-demo",
+      "medicines": [
+        {"name":"Vitamin D","dose":"1000 IU","frequency":"daily","source":"patient-reported"}
+      ]
+    }
+  ],
+  "clarifications": []
+}
+```
+
+The route reads through the prescription and intake repositories with a patient ID filter before applying the Missing Stop Detector. It does not implement doctor-summary download.
+
 ## Tests
 
 From `backend/`, run the focused detector tests:
