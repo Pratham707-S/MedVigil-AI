@@ -27,6 +27,11 @@ class FailingExtractionProvider:
         raise RuntimeError("simulated Gemini failure")
 
 
+class InvalidExtractionProvider:
+    def extract(self, document: bytes, mime_type: str) -> ExtractionDraft:
+        return ExtractionDraft(medicines=[])
+
+
 def upload(filename: str, content: bytes, content_type: str) -> UploadFile:
     return UploadFile(
         file=BytesIO(content),
@@ -81,6 +86,29 @@ class PrescriptionUploadTests(unittest.TestCase):
             )
 
         self.assertEqual(context.exception.status_code, 502)
+
+    def test_blank_patient_id_is_rejected(self):
+        with self.assertRaises(HTTPException) as context:
+            asyncio.run(
+                upload_prescription(
+                    upload("demo.pdf", b"pdf-bytes", "application/pdf"),
+                    FakeExtractionProvider(),
+                    "   ",
+                )
+            )
+
+        self.assertEqual(context.exception.status_code, 422)
+
+    def test_invalid_extraction_is_returned_as_unprocessable(self):
+        with self.assertRaises(HTTPException) as context:
+            asyncio.run(
+                upload_prescription(
+                    upload("demo.pdf", b"pdf-bytes", "application/pdf"),
+                    InvalidExtractionProvider(),
+                )
+            )
+
+        self.assertEqual(context.exception.status_code, 422)
 
 
 if __name__ == "__main__":
