@@ -97,8 +97,8 @@ export function ReviewScreen() {
   if (loading) {
     return (
       <div className="py-16 text-center text-slate-500 space-y-3">
-        <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p className="text-xs">Loading prescription draft...</p>
+        <div className="w-8 h-8 border-3 border-sky-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p className="text-xs font-medium">Loading prescription draft...</p>
       </div>
     );
   }
@@ -112,7 +112,7 @@ export function ReviewScreen() {
         <button
           type="button"
           onClick={() => navigate('/')}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl transition min-h-[44px]"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3.5 py-2 rounded-xl transition min-h-[44px]"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Upload
         </button>
@@ -121,9 +121,9 @@ export function ReviewScreen() {
           <button
             type="button"
             onClick={() => setShowFileModal(true)}
-            className="inline-flex items-center gap-1 text-xs font-bold text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-2 rounded-xl transition min-h-[44px]"
+            className="inline-flex items-center gap-1 text-xs font-bold text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-200 px-3.5 py-2 rounded-xl transition min-h-[44px]"
           >
-            <Eye className="w-4 h-4" />
+            <Eye className="w-4 h-4 text-sky-600" />
             <span>View Original</span>
           </button>
         )}
@@ -132,8 +132,8 @@ export function ReviewScreen() {
       {/* Amber Banner */}
       <div className="bg-amber-50 border-l-4 border-amber-500 p-3.5 rounded-r-2xl flex items-start gap-2.5 shadow-2xs">
         <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-        <div className="text-xs text-amber-950 leading-relaxed">
-          <strong className="font-bold block text-amber-950 mb-0.5">
+        <div className="text-xs text-amber-950 leading-relaxed font-medium">
+          <strong className="font-bold block text-amber-950 mb-0.5 font-heading">
             Draft — Please verify with your original prescription.
           </strong>
           Extracted names and dosages should be reviewed before adding to your official timeline.
@@ -141,7 +141,7 @@ export function ReviewScreen() {
       </div>
 
       {error && (
-        <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-900 text-xs font-semibold" role="alert">
+        <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-950 text-xs font-semibold" role="alert">
           <strong>Error: </strong> {error}
         </div>
       )}
@@ -149,8 +149,8 @@ export function ReviewScreen() {
       {/* Date Picker Input */}
       <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-            <Calendar className="w-4 h-4 text-emerald-600" />
+          <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 font-heading">
+            <Calendar className="w-4 h-4 text-sky-600" />
             Prescription Date (YYYY-MM-DD) *
           </label>
           <span className="text-[11px] text-slate-500 font-mono font-bold">{draft?.prescription_id}</span>
@@ -160,7 +160,7 @@ export function ReviewScreen() {
           required
           value={prescribedOn}
           onChange={(e) => setPrescribedOn(e.target.value)}
-          className={`w-full border rounded-xl px-3.5 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 bg-slate-50/50 ${
+          className={`w-full border rounded-xl px-3.5 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 bg-slate-50/50 ${
             !prescribedOn.trim() ? 'border-amber-400 bg-amber-50/20' : 'border-slate-300'
           }`}
         />
@@ -174,15 +174,15 @@ export function ReviewScreen() {
       {/* Medicines Stack */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 font-heading">
             Extracted Medications ({medicines.length})
           </h3>
           <button
             type="button"
             onClick={handleAddMedicine}
-            className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 px-3 py-1.5 rounded-xl transition min-h-[38px]"
+            className="inline-flex items-center gap-1 text-xs font-bold text-sky-800 bg-sky-50 hover:bg-sky-100 border border-sky-300 px-3 py-1.5 rounded-xl transition min-h-[38px]"
           >
-            <Plus className="w-4 h-4" /> + Add Medicine
+            <Plus className="w-4 h-4 text-sky-600" /> + Add Medicine
           </button>
         </div>
 
@@ -192,11 +192,11 @@ export function ReviewScreen() {
             className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs space-y-3 relative group"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md">
+              <span className="text-xs font-extrabold text-sky-800 bg-sky-50 px-2.5 py-1 rounded-md border border-sky-100 font-heading">
                 Item #{idx + 1}
               </span>
 
-              {/* Elderly-Friendly Accessible Delete button with min-h-[44px] */}
+              {/* Accessible Remove button */}
               <button
                 type="button"
                 onClick={() => handleRemoveMedicine(idx)}
@@ -220,7 +220,7 @@ export function ReviewScreen() {
                 value={med.name}
                 placeholder="e.g. Metformin"
                 onChange={(e) => handleMedChange(idx, 'name', e.target.value)}
-                className="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                className="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
               />
             </div>
 
@@ -233,7 +233,7 @@ export function ReviewScreen() {
                   value={med.dose}
                   placeholder="e.g. 500 mg"
                   onChange={(e) => handleMedChange(idx, 'dose', e.target.value)}
-                  className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                 />
               </div>
 
@@ -244,7 +244,7 @@ export function ReviewScreen() {
                   value={med.frequency}
                   placeholder="e.g. twice daily"
                   onChange={(e) => handleMedChange(idx, 'frequency', e.target.value)}
-                  className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  className="w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
                 />
               </div>
             </div>
@@ -252,13 +252,13 @@ export function ReviewScreen() {
         ))}
       </div>
 
-      {/* Actions */}
+      {/* Primary Confirm Button */}
       <div className="pt-2 space-y-2">
         <button
           type="button"
           onClick={handleConfirm}
           disabled={isConfirmDisabled}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-98 disabled:opacity-40 disabled:pointer-events-none text-white font-extrabold py-4 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-md min-h-[52px] text-sm transition touch-manipulation"
+          className="w-full bg-sky-600 hover:bg-sky-700 active:scale-98 disabled:opacity-40 disabled:pointer-events-none text-white font-extrabold py-4 px-4 rounded-2xl flex items-center justify-center gap-2 shadow-md min-h-[52px] text-sm transition touch-manipulation font-heading"
         >
           {isConfirming ? (
             <span>Saving to Timeline...</span>
@@ -282,7 +282,7 @@ export function ReviewScreen() {
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn">
           <div className="bg-white rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl space-y-3 p-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <span className="text-xs font-bold text-slate-800 truncate">
+              <span className="text-xs font-bold text-slate-800 truncate font-heading">
                 {draft.source_filename}
               </span>
               <button
@@ -297,13 +297,13 @@ export function ReviewScreen() {
             <div className="max-h-[60vh] overflow-auto rounded-xl bg-slate-50 flex items-center justify-center p-2">
               {draft.source_filename.toLowerCase().endsWith('.pdf') ? (
                 <div className="text-center p-6 space-y-2">
-                  <FileText className="w-12 h-12 text-amber-600 mx-auto" />
+                  <FileText className="w-12 h-12 text-sky-600 mx-auto" />
                   <p className="text-xs text-slate-700 font-semibold">{draft.source_filename}</p>
                   <a
                     href={draft.filePreviewUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-block text-xs text-emerald-700 font-bold underline"
+                    className="inline-block text-xs text-sky-700 font-bold underline"
                   >
                     Open PDF in new tab
                   </a>

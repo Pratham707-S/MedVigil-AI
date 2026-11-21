@@ -15,14 +15,14 @@ export function UploadScreen() {
   const handleFileUpload = async (file) => {
     if (!file) return;
 
-    // Check size limit: 10MB (413 handling)
+    // Check size limit: 10MB
     const maxSizeBytes = 10 * 1024 * 1024;
     if (file.size > maxSizeBytes) {
       setError('File exceeds 10MB limit (Payload Too Large). Please upload a smaller file.');
       return;
     }
 
-    // Check file type: image or PDF (400 handling)
+    // Check file type: image or PDF
     const isValidType =
       file.type.startsWith('image/') ||
       file.type === 'application/pdf' ||
@@ -38,7 +38,6 @@ export function UploadScreen() {
     setProcessingStage('Uploading prescription...');
     setError(null);
 
-    // Staged feedback for mobile UX
     const stageTimer = setTimeout(() => {
       setProcessingStage('Reading prescription with AI...');
     }, 450);
@@ -46,7 +45,6 @@ export function UploadScreen() {
     try {
       const draft = await uploadPrescription(file);
       clearTimeout(stageTimer);
-      // Upload success (201 Created) -> navigate to /review/:prescriptionId
       navigate(`/review/${encodeURIComponent(draft.prescription_id)}`, {
         state: { draft },
       });
@@ -79,7 +77,6 @@ export function UploadScreen() {
   };
 
   const handleManualEntry = () => {
-    // Allows user to bypass extraction on 422 error and create a blank draft
     const manualDraft = {
       prescription_id: `rx-manual-${Date.now().toString().slice(-4)}`,
       patient_id: 'demo-patient',
@@ -95,26 +92,26 @@ export function UploadScreen() {
 
   return (
     <div className="space-y-4 animate-fadeIn">
-      {/* Welcome Card */}
-      <div className="bg-gradient-to-br from-emerald-800 to-teal-900 rounded-3xl p-5 text-white shadow-md">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-700/60 text-emerald-200 border border-emerald-500/30 mb-2">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
+      {/* Welcome Card with Cohesive Brand Blue Gradient */}
+      <div className="bg-gradient-to-br from-sky-800 to-slate-900 rounded-3xl p-5 text-white shadow-md">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-700/60 text-sky-200 border border-sky-500/30 mb-2">
+          <Sparkles className="w-3.5 h-3.5 text-sky-300" />
           MedVigil AI Scanner
         </div>
-        <h2 className="text-xl font-extrabold tracking-tight">Prescription Intake</h2>
-        <p className="text-xs text-emerald-100/90 mt-1 leading-relaxed">
+        <h2 className="text-xl font-extrabold tracking-tight font-heading">Prescription Intake</h2>
+        <p className="text-xs text-sky-100/90 mt-1 leading-relaxed font-medium">
           Snap a photo of your prescription. Our AI reads the medicines for your review before confirming.
         </p>
       </div>
 
-      {/* Error State with Retry & Manual Entry options */}
+      {/* Error State */}
       {error && (
-        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs text-rose-900 space-y-3">
+        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs text-rose-950 space-y-3">
           <div className="flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
             <div>
               <strong className="font-bold block text-rose-950">Extraction Issue</strong>
-              <span>{error}</span>
+              <span className="font-medium">{error}</span>
             </div>
           </div>
           <div className="flex items-center gap-2 pt-1">
@@ -140,16 +137,16 @@ export function UploadScreen() {
 
       {/* Processing State */}
       {isProcessing ? (
-        <div className="bg-white border-2 border-emerald-500/30 rounded-3xl p-8 text-center shadow-xs space-y-4">
-          <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto animate-pulse">
-            <UploadCloud className="w-8 h-8 text-emerald-600 animate-bounce" />
+        <div className="bg-white border-2 border-sky-500/30 rounded-3xl p-8 text-center shadow-xs space-y-4">
+          <div className="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center mx-auto animate-pulse border border-sky-100">
+            <UploadCloud className="w-8 h-8 text-sky-600 animate-bounce" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-800">{processingStage}</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Please wait while medication details are extracted.</p>
+            <h3 className="text-base font-bold text-slate-800 font-heading">{processingStage}</h3>
+            <p className="text-xs text-slate-500 mt-0.5 font-medium">Please wait while medication details are extracted.</p>
           </div>
           <div className="w-48 h-1.5 bg-slate-100 rounded-full mx-auto overflow-hidden">
-            <div className="w-2/3 h-full bg-emerald-500 rounded-full animate-pulse"></div>
+            <div className="w-2/3 h-full bg-sky-600 rounded-full animate-pulse"></div>
           </div>
         </div>
       ) : (
@@ -176,23 +173,23 @@ export function UploadScreen() {
             }}
             onClick={() => triggerUpload()}
             className={`border-2 border-dashed rounded-3xl p-6 text-center cursor-pointer transition-all ${
-              dragActive ? 'border-emerald-500 bg-emerald-50/50 scale-[1.01]' : 'border-slate-300 bg-slate-50 hover:bg-slate-100/70'
+              dragActive ? 'border-sky-500 bg-sky-50/50 scale-[1.01]' : 'border-slate-300 bg-slate-50 hover:bg-sky-50/40 hover:border-sky-400'
             }`}
           >
-            <div className="w-12 h-12 bg-white rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-center mx-auto mb-2 text-emerald-600">
+            <div className="w-12 h-12 bg-white rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-center mx-auto mb-2 text-sky-600">
               <UploadCloud className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-bold text-slate-800">Tap to Upload Prescription</h4>
-            <p className="text-xs text-slate-400 mt-0.5">Supports JPG, PNG images or PDF documents (up to 10MB)</p>
+            <h4 className="text-sm font-bold text-slate-900 font-heading">Tap to Upload Prescription</h4>
+            <p className="text-xs text-slate-500 mt-0.5 font-medium">Supports JPG, PNG images or PDF documents (up to 10MB)</p>
           </div>
 
-          {/* 3 Quick Action Buttons: Camera, Gallery, PDF (Min height 48px) */}
+          {/* 3 Unified Action Buttons with Primary Palette */}
           <div className="grid grid-cols-3 gap-2.5">
             {/* Camera */}
             <button
               type="button"
               onClick={() => triggerUpload('environment')}
-              className="bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white p-3 min-h-[56px] rounded-2xl flex flex-col items-center justify-center text-center shadow-xs transition touch-manipulation"
+              className="bg-sky-600 hover:bg-sky-700 active:scale-98 text-white p-3 min-h-[56px] rounded-2xl flex flex-col items-center justify-center text-center shadow-xs transition touch-manipulation"
             >
               <Camera className="w-5 h-5 mb-1" />
               <span className="text-xs font-bold leading-tight">Camera</span>
@@ -202,9 +199,9 @@ export function UploadScreen() {
             <button
               type="button"
               onClick={() => triggerUpload()}
-              className="bg-white hover:bg-slate-50 active:scale-98 border border-slate-200 text-slate-700 p-3 min-h-[56px] rounded-2xl flex flex-col items-center justify-center text-center shadow-2xs transition touch-manipulation"
+              className="bg-white hover:bg-slate-50 active:scale-98 border border-slate-200 text-slate-800 p-3 min-h-[56px] rounded-2xl flex flex-col items-center justify-center text-center shadow-2xs transition touch-manipulation"
             >
-              <ImageIcon className="w-5 h-5 text-indigo-600 mb-1" />
+              <ImageIcon className="w-5 h-5 text-sky-600 mb-1" />
               <span className="text-xs font-bold leading-tight">Gallery</span>
             </button>
 
@@ -212,9 +209,9 @@ export function UploadScreen() {
             <button
               type="button"
               onClick={() => triggerUpload()}
-              className="bg-white hover:bg-slate-50 active:scale-98 border border-slate-200 text-slate-700 p-3 min-h-[56px] rounded-2xl flex flex-col items-center justify-center text-center shadow-2xs transition touch-manipulation"
+              className="bg-white hover:bg-slate-50 active:scale-98 border border-slate-200 text-slate-800 p-3 min-h-[56px] rounded-2xl flex flex-col items-center justify-center text-center shadow-2xs transition touch-manipulation"
             >
-              <FileText className="w-5 h-5 text-amber-600 mb-1" />
+              <FileText className="w-5 h-5 text-sky-600 mb-1" />
               <span className="text-xs font-bold leading-tight">PDF Doc</span>
             </button>
           </div>
@@ -222,10 +219,10 @@ export function UploadScreen() {
       )}
 
       {/* Safety Notice */}
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 flex items-start gap-2.5 text-[11px] text-slate-500">
-        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-        <p>
-          <strong className="text-slate-700">Verification Protocol:</strong> Extracted medicines will be presented in an editable draft. Nothing is confirmed without your review.
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 flex items-start gap-2.5 text-xs text-slate-600">
+        <ShieldCheck className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+        <p className="font-medium">
+          <strong className="text-slate-800">Verification Protocol:</strong> Extracted medicines will be presented in an editable draft. Nothing is confirmed without your review.
         </p>
       </div>
     </div>

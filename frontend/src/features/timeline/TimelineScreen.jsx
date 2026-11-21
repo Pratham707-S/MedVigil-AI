@@ -35,7 +35,6 @@ export function TimelineScreen() {
   const handleAnswerClarification = (medicine, answer) => {
     setAnswers((prev) => ({ ...prev, [medicine]: answer }));
 
-    // Persist in mock store so Summary reflects the patient's clarification
     try {
       const store = getMockStore();
       const item = store.clarifications.find((c) => c.medicine.toLowerCase() === medicine.toLowerCase());
@@ -52,8 +51,8 @@ export function TimelineScreen() {
   if (loading) {
     return (
       <div className="py-16 text-center text-slate-500 space-y-3">
-        <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p className="text-xs">Loading medication timeline...</p>
+        <div className="w-8 h-8 border-3 border-sky-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p className="text-xs font-medium">Loading medication timeline...</p>
       </div>
     );
   }
@@ -63,21 +62,21 @@ export function TimelineScreen() {
 
   return (
     <div className="space-y-4 animate-fadeIn pb-6">
-      {/* Toast Alert with Screen Reader Accessibility */}
+      {/* Toast Alert */}
       {toast && (
         <div
           role="status"
           aria-live="polite"
-          className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 flex items-center gap-2.5 text-emerald-900 text-xs font-bold animate-slideDown shadow-xs"
+          className="bg-sky-50 border border-sky-200 rounded-xl p-3.5 flex items-center gap-2.5 text-sky-900 text-xs font-bold animate-slideDown shadow-xs"
         >
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+          <CheckCircle2 className="w-5 h-5 text-sky-600 shrink-0" />
           <span>{toast}</span>
         </div>
       )}
 
       {/* Screen Header */}
       <div>
-        <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">Timeline & Clarifications</h2>
+        <h2 className="text-xl font-extrabold text-slate-900 tracking-tight font-heading">Timeline & Clarifications</h2>
         <p className="text-xs text-slate-600 mt-0.5 font-medium">
           Chronological prescription events and Missing Stop detector flags.
         </p>
@@ -87,7 +86,7 @@ export function TimelineScreen() {
       {clarifications && clarifications.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between px-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5 font-heading">
               <AlertTriangle className="w-4 h-4 text-amber-600" />
               Missing Stop Detector ({clarifications.length})
             </span>
@@ -106,18 +105,18 @@ export function TimelineScreen() {
                   className="bg-amber-50/80 border-2 border-amber-300 rounded-2xl p-4 shadow-xs space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <strong className="text-base font-black text-slate-900">{item.medicine}</strong>
+                    <strong className="text-base font-black text-slate-900 font-heading">{item.medicine}</strong>
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-900 border border-amber-300">
                       {currentAnswer ? 'Clarification Answered' : 'Needs Clarification'}
                     </span>
                   </div>
 
                   <div className="bg-white/95 border border-amber-200 rounded-xl p-3.5 text-xs text-slate-900 font-bold leading-relaxed">
-                    <span className="text-amber-800 font-extrabold block mb-1">Question for Patient / Doctor:</span>
+                    <span className="text-amber-800 font-extrabold block mb-1 font-heading">Question for Patient / Doctor:</span>
                     "{item.question}"
                   </div>
 
-                  {/* Interactive Response Buttons for Elderly & Caregivers */}
+                  {/* Interactive Response Buttons */}
                   <div className="bg-white/70 border border-amber-200/70 rounded-xl p-3 space-y-2">
                     <span className="text-[11px] font-extrabold text-slate-700 block">
                       Quick Answer for Doctor's Handoff Note:
@@ -128,8 +127,8 @@ export function TimelineScreen() {
                         onClick={() => handleAnswerClarification(item.medicine, 'yes')}
                         className={`min-h-[44px] py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition touch-manipulation border ${
                           currentAnswer === 'yes'
-                            ? 'bg-emerald-700 text-white border-emerald-800 shadow-xs'
-                            : 'bg-white hover:bg-emerald-50 text-emerald-800 border-emerald-300'
+                            ? 'bg-sky-700 text-white border-sky-800 shadow-xs'
+                            : 'bg-white hover:bg-sky-50 text-sky-800 border-sky-300'
                         }`}
                       >
                         <Check className="w-4 h-4" />
@@ -141,8 +140,8 @@ export function TimelineScreen() {
                         onClick={() => handleAnswerClarification(item.medicine, 'no')}
                         className={`min-h-[44px] py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition touch-manipulation border ${
                           currentAnswer === 'no'
-                            ? 'bg-rose-700 text-white border-rose-800 shadow-xs'
-                            : 'bg-white hover:bg-rose-50 text-rose-800 border-rose-300'
+                            ? 'bg-slate-700 text-white border-slate-800 shadow-xs'
+                            : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-300'
                         }`}
                       >
                         <XCircle className="w-4 h-4" />
@@ -151,7 +150,7 @@ export function TimelineScreen() {
                     </div>
 
                     {currentAnswer && (
-                      <p className="text-[11px] font-bold text-emerald-700 text-center pt-0.5">
+                      <p className="text-[11px] font-bold text-sky-800 text-center pt-0.5">
                         ✓ Response logged. Ready for inclusion in Doctor Summary.
                       </p>
                     )}
@@ -172,7 +171,7 @@ export function TimelineScreen() {
 
       {/* SECTION 2: Chronological Dated Event Cards */}
       <div className="space-y-3 pt-2">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 px-1">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 px-1 font-heading">
           Chronological Records ({events.length})
         </h3>
 
@@ -190,7 +189,7 @@ export function TimelineScreen() {
                   {/* Timeline Node */}
                   <span
                     className={`absolute -left-5 top-3.5 w-2.5 h-2.5 rounded-full border-2 border-white ring-2 ${
-                      isRx ? 'bg-emerald-600 ring-emerald-300' : 'bg-indigo-600 ring-indigo-300'
+                      isRx ? 'bg-sky-600 ring-sky-300' : 'bg-slate-600 ring-slate-300'
                     }`}
                   />
 

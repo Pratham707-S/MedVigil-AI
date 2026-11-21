@@ -28,32 +28,34 @@ export function MobileShell({ children }) {
   return (
     <div className={`min-h-dvh bg-slate-100 flex justify-center text-slate-900 ${largeTextMode ? 'text-[1.08rem]' : ''}`}>
       {/* Mobile container: max-w-md, min-h-dvh, shadow-sm */}
-      <div className="w-full max-w-md min-h-dvh bg-white flex flex-col shadow-sm relative border-x border-slate-200/90">
+      <div className="w-full max-w-md min-h-dvh bg-white flex flex-col shadow-sm relative border-x border-slate-200">
         
         {/* Top Header */}
-        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-4 py-3 flex items-center justify-between shadow-2xs">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-700 to-teal-500 text-white flex items-center justify-center font-black text-base shadow-xs">
+        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-2xs">
+          {/* Logo with Unified Primary Color */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-700 to-sky-500 text-white flex items-center justify-center font-black text-base shadow-xs font-heading">
               Rx
             </div>
             <div>
-              <h1 className="text-base font-extrabold text-slate-900 tracking-tight leading-tight">
+              <h1 className="text-base font-extrabold text-slate-900 tracking-tight leading-tight font-heading">
                 MedVigil AI
               </h1>
-              <span className="text-[10px] font-bold text-emerald-700 block -mt-0.5">ORBIX RECONCILIATION</span>
+              <span className="text-[10px] font-bold text-sky-700 block -mt-0.5 tracking-wider uppercase">
+                Clinical Reconciliation
+              </span>
             </div>
           </div>
 
-          {/* Right Header items: Accessibility Toggle + Language + API Status */}
+          {/* Right Header items */}
           <div className="flex items-center gap-1.5">
             {/* Elderly Friendly Large Text (Aa) Toggle */}
             <button
               type="button"
               onClick={() => setLargeTextMode(!largeTextMode)}
-              className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold border transition ${
+              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border transition ${
                 largeTextMode
-                  ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
+                  ? 'bg-sky-600 text-white border-sky-700 shadow-xs'
                   : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
               }`}
               title="Toggle Large Text / Senior Reading Mode"
@@ -75,18 +77,18 @@ export function MobileShell({ children }) {
 
             {/* Subtle API Status Dot */}
             <div
-              className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded-full"
+              className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-full"
               title={healthStatus === 'ok' ? 'API Online / Mock Ready' : 'API Connecting'}
             >
               <span
                 className={`w-2 h-2 rounded-full ${
                   healthStatus === 'ok'
-                    ? 'bg-emerald-500 ring-2 ring-emerald-200 animate-pulse'
+                    ? 'bg-sky-500 ring-2 ring-sky-200 animate-pulse'
                     : 'bg-amber-500 ring-2 ring-amber-200'
                 }`}
               />
               <span className="text-[11px] font-bold text-slate-700">
-                {healthStatus === 'ok' ? 'Online' : 'Demo'}
+                {healthStatus === 'ok' ? 'Ready' : 'Demo'}
               </span>
             </div>
           </div>
@@ -97,10 +99,10 @@ export function MobileShell({ children }) {
           {children}
         </main>
 
-        {/* Bottom Navigation: 4 fixed tabs, min-h-[48px], hidden on /review */}
+        {/* Bottom Navigation: Unified primary active state */}
         {!isReviewScreen && (
           <nav
-            className="fixed bottom-0 z-30 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-2 py-1.5 flex justify-around shadow-lg"
+            className="fixed bottom-0 z-30 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 flex justify-around shadow-lg"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 8px) + 4px)' }}
             aria-label="Mobile Bottom Navigation"
           >
@@ -116,7 +118,7 @@ export function MobileShell({ children }) {
                   to={item.to}
                   className={`flex flex-col items-center justify-center min-h-[48px] px-3 rounded-xl transition-all duration-150 flex-1 touch-manipulation ${
                     isActive
-                      ? 'text-emerald-800 font-extrabold bg-emerald-50'
+                      ? 'text-sky-700 font-extrabold bg-sky-50'
                       : 'text-slate-500 hover:text-slate-800 font-semibold'
                   }`}
                 >
