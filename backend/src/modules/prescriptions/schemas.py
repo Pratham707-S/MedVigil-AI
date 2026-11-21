@@ -32,3 +32,4 @@ class ConfirmedPrescription(BaseModel):
     status: Literal["confirmed"] = "confirmed"
     prescribed_on: date
     medicines: list[PrescriptionMedicine]
+    
