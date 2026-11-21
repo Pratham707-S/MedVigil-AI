@@ -79,6 +79,7 @@ Request: JSON body.
 {
   "patient_id": "demo-patient",
   "prescribed_on": "2026-10-01",
+  "source_filename": "demo-prescription.pdf",
   "medicines": [
     { "name": "Metformin", "dose": "500 mg", "frequency": "twice daily", "source": "prescription" }
   ]
@@ -93,6 +94,7 @@ Success `200 OK`:
   "patient_id": "demo-patient",
   "status": "confirmed",
   "prescribed_on": "2026-10-01",
+  "source_filename": "demo-prescription.pdf",
   "medicines": [
     { "name": "Metformin", "dose": "500 mg", "frequency": "twice daily", "source": "prescription" }
   ]
@@ -101,10 +103,10 @@ Success `200 OK`:
 
 Validation and errors:
 
-- `404 Not Found` when the draft ID does not exist.
 - `409 Conflict` when the record is already confirmed or cannot be confirmed twice.
 - `422 Unprocessable Entity` for a missing date, empty medicine name, or malformed medicine list.
-- Confirmation must preserve the reviewed values and must not silently invent missing dose or frequency data.
+- The upload draft is not persisted; the explicit confirmation request creates the confirmed record using the path ID and corrected values.
+- Confirmation must preserve the reviewed values, source filename, and must not silently invent missing dose or frequency data.
 
 Owner: Maanani for prescription confirmation; Rohit for the review/confirm call.
 
@@ -155,11 +157,12 @@ Success `200 OK`:
 ```json
 {
   "patient_id": "demo-patient",
-  "events": [
+  "prescriptions": [
     {
       "type": "prescription",
       "prescription_id": "rx-older-001",
       "date": "2026-08-01",
+      "source_filename": "demo-older.pdf",
       "medicines": [
         { "name": "Lisinopril", "dose": "10 mg", "frequency": "daily", "source": "prescription" }
       ]
@@ -168,12 +171,21 @@ Success `200 OK`:
       "type": "prescription",
       "prescription_id": "rx-newer-001",
       "date": "2026-10-01",
+      "source_filename": "demo-newer.pdf",
       "medicines": []
+    }
+  ],
+  "intake": [
+    {
+      "intake_id": "intake-001",
+      "medicines": [
+        { "name": "Vitamin D", "dose": "1000 IU", "frequency": "daily", "source": "patient-reported" }
+      ]
     }
   ],
   "clarifications": [
     {
-      "medicine": "Lisinopril",
+      "medicine": { "name": "Lisinopril", "dose": "10 mg", "frequency": "daily" },
       "question": "Are you still taking Lisinopril?",
       "reviewer_status": "needs_clarification",
       "patient_instruction": null
@@ -185,7 +197,7 @@ Success `200 OK`:
 Validation and errors:
 
 - `400 Bad Request` when `patient_id` is missing or blank.
-- `404 Not Found` when the patient has no demo or stored records.
+- An empty history returns `200 OK` with empty `prescriptions`, `intake`, and `clarifications` lists.
 - The Missing Stop Detector flags a medicine only when it appears on an older confirmed prescription, is absent from a newer confirmed prescription, and has no explicit stop instruction.
 - Its output is a clarification question for review, never an instruction to stop or continue a medicine. Keep `patient_instruction` null.
 

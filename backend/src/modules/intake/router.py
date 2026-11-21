@@ -6,7 +6,6 @@ from .service import save_intake
 router = APIRouter(
     prefix="/intake",
     tags=["intake"],
-    description="Patient-reported medicines and over-the-counter entries.",
 )
 
 

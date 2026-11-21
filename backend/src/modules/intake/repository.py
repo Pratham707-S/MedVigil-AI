@@ -48,3 +48,21 @@ class IntakeRepository:
             patient_id=row["patient_id"],
             medicines=json.loads(row["medicines_json"]),
         )
+
+    def list_for_patient(self, patient_id: str) -> list[IntakeResponse]:
+        """Read only this patient's reported medicines in insertion order."""
+        connection = connect(self.database_path)
+        try:
+            rows = connection.execute(
+                "SELECT intake_id FROM intake_records WHERE patient_id = ? ORDER BY created_at ASC, intake_id ASC",
+                (patient_id,),
+            ).fetchall()
+        finally:
+            connection.close()
+
+        records = []
+        for row in rows:
+            record = self.get(row["intake_id"])
+            if record is not None:
+                records.append(record)
+        return records
