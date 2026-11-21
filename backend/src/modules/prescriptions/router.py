@@ -3,12 +3,13 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from starlette.concurrency import run_in_threadpool
 
+from src.config import get_settings
 from .extraction import ExtractionProvider
 from .gemini_provider import GeminiConfigurationError, GeminiExtractionProvider
 from .repository import DuplicatePrescriptionError, PrescriptionRepository
 from .schemas import ConfirmPrescriptionRequest, ConfirmedPrescription, PrescriptionDraft
 
-MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+MAX_UPLOAD_BYTES = get_settings().max_upload_bytes
 ALLOWED_MIME_TYPES = frozenset({"application/pdf", "image/jpeg", "image/png", "image/webp"})
 
 router = APIRouter(prefix="/prescriptions", tags=["prescriptions"])

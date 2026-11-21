@@ -4,6 +4,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from src.config import get_settings
 from .extraction import ExtractionDraft, validate_extraction
 
 
@@ -20,7 +21,7 @@ class GeminiExtractionProvider:
 
     def __init__(self, api_key: str | None = None, model: str | None = None, client: Any = None) -> None:
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
-        self.model = model or os.getenv("GEMINI_MODEL", DEFAULT_GEMINI_MODEL)
+        self.model = model or os.getenv("GEMINI_MODEL", get_settings().gemini_model or DEFAULT_GEMINI_MODEL)
         self._client = client
 
     def _client_and_types(self) -> tuple[Any, Any]:

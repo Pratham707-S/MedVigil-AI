@@ -1,6 +1,6 @@
 # ORBIX API contract (MVP, v0)
 
-> Owner: Pratham. This document is the integration agreement for the modular-monolith MVP; handlers remain placeholders in the current skeleton.
+> Owner: Pratham. This document is the integration agreement for the modular-monolith MVP and the production migration seam.
 
 ## Conventions
 
@@ -62,9 +62,10 @@ Success `201 Created`:
 
 Validation and errors:
 
-- `400 Bad Request` when `file` is missing, empty, or an unsupported type.
+- `400 Bad Request` when the file is empty.
+- `415 Unsupported Media Type` when the file is not a PDF, JPEG, PNG, or WebP.
 - `413 Payload Too Large` when the configured upload limit is exceeded.
-- `422 Unprocessable Entity` when extraction cannot produce a valid draft shape; the UI should allow retry or manual review.
+- `422 Unprocessable Entity` when extraction cannot produce a valid draft shape or the patient ID is blank; the UI should allow retry or manual review.
 - Never treat extracted text as confirmed medication instructions.
 
 Owner: Maanani for backend upload/extraction; Rohit for the upload and draft-review call flow.

@@ -2,9 +2,11 @@ import os
 import sqlite3
 from pathlib import Path
 
+from src.config import get_settings
+
 
 DEFAULT_DATABASE_PATH = Path(
-    os.getenv("MEDVIGIL_DB_PATH", Path(__file__).resolve().parents[3] / "medvigil.db")
+    os.getenv("MEDVIGIL_DB_PATH", get_settings().sqlite_path)
 )
 
 
