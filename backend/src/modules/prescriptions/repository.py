@@ -25,10 +25,16 @@ class PrescriptionRepository:
                 prescribed_on TEXT NOT NULL,
                 source_filename TEXT NOT NULL,
                 medicines_json TEXT NOT NULL,
+                stop_instructions_json TEXT NOT NULL,
                 created_at TEXT NOT NULL
             )
             """
         )
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(confirmed_prescriptions)")}
+        if "stop_instructions_json" not in columns:
+            connection.execute(
+                "ALTER TABLE confirmed_prescriptions ADD COLUMN stop_instructions_json TEXT NOT NULL DEFAULT '[]'"
+            )
 
     def save_confirmed(
         self,
@@ -44,8 +50,8 @@ class PrescriptionRepository:
             connection.execute(
                 """
                 INSERT INTO confirmed_prescriptions
-                    (prescription_id, patient_id, prescribed_on, source_filename, medicines_json, created_at)
-                VALUES (?, ?, ?, ?, ?, ?)
+                    (prescription_id, patient_id, prescribed_on, source_filename, medicines_json, stop_instructions_json, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     prescription_id,
@@ -53,6 +59,7 @@ class PrescriptionRepository:
                     payload.prescribed_on.isoformat(),
                     payload.source_filename,
                     json.dumps([medicine.model_dump() for medicine in payload.medicines]),
+                    json.dumps(payload.stop_instructions),
                     datetime.now(timezone.utc).isoformat(),
                 ),
             )
@@ -69,6 +76,7 @@ class PrescriptionRepository:
             prescribed_on=payload.prescribed_on,
             medicines=payload.medicines,
             source_filename=payload.source_filename,
+            stop_instructions=payload.stop_instructions,
         )
 
     def get_confirmed(self, prescription_id: str) -> ConfirmedPrescription | None:
@@ -78,7 +86,7 @@ class PrescriptionRepository:
             self._ensure_table(connection)
             row = connection.execute(
                 """
-                SELECT prescription_id, patient_id, prescribed_on, source_filename, medicines_json
+                SELECT prescription_id, patient_id, prescribed_on, source_filename, medicines_json, stop_instructions_json
                 FROM confirmed_prescriptions WHERE prescription_id = ?
                 """,
                 (prescription_id,),
@@ -94,4 +102,27 @@ class PrescriptionRepository:
             prescribed_on=row["prescribed_on"],
             medicines=json.loads(row["medicines_json"]),
             source_filename=row["source_filename"],
+            stop_instructions=json.loads(row["stop_instructions_json"]),
         )
+
+    def list_confirmed(self, patient_id: str) -> list[ConfirmedPrescription]:
+        """Read this patient's confirmed records in deterministic date order."""
+        connection = connect(self.database_path)
+        try:
+            self._ensure_table(connection)
+            rows = connection.execute(
+                """
+                SELECT prescription_id FROM confirmed_prescriptions
+                WHERE patient_id = ? ORDER BY prescribed_on ASC, prescription_id ASC
+                """,
+                (patient_id,),
+            ).fetchall()
+        finally:
+            connection.close()
+
+        records = []
+        for row in rows:
+            record = self.get_confirmed(row["prescription_id"])
+            if record is not None:
+                records.append(record)
+        return records

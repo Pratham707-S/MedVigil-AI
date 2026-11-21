@@ -25,6 +25,7 @@ class ConfirmPrescriptionRequest(BaseModel):
     prescribed_on: date
     medicines: list[PrescriptionMedicine] = Field(min_length=1)
     source_filename: str = ""
+    stop_instructions: list[str] = Field(default_factory=list)
 
 
 class ConfirmedPrescription(BaseModel):
@@ -34,3 +35,4 @@ class ConfirmedPrescription(BaseModel):
     prescribed_on: date
     medicines: list[PrescriptionMedicine]
     source_filename: str = ""
+    stop_instructions: list[str] = Field(default_factory=list)
